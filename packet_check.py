@@ -1,11 +1,14 @@
 from scapy.all import *
 from collections import Counter
+import pandas as pd
 
 sample_interval = 60
-protocols={1:'icmp', 6:'tcp', 17'udp'}
+protocols={1:'icmp', 6:'tcp', 17:'udp'}
 
 traffic = Counter()
 hosts={}
+data = []
+df = pd.DataFrame(data, columns=['src_ip', 'dst_ip', 'proto', 'length', 'src_mac', 'dst_mac', 'sport', 'dport', 'seq', 'flag'])
 
 def size_check(num):
     for x in ['','K', 'M', 'G', 'T']:
@@ -18,8 +21,6 @@ def traffic_monitor_callback(pkt):
         src_ip = pkt[IP].src
         dst_ip = pkt[IP].dst
         porto = pkt[IP].proto
-        time = pkt[IP].time
-        ttl = pkt[IP].ttl
         length = pkt[IP].len
         src_mac = packet[0][0].src
         dst_mac = packet[0][0].dst
@@ -29,7 +30,7 @@ def traffic_monitor_callback(pkt):
                 message_type = pkt[ICMP].type
                 code = pkt[ICMP].code
                 traffic.update({tuple(sorted(map(atol, (pkt.src, pkt.dst)))): pkt.len})
-                
+                data_to_insert = {}
             if proto == 6:
                 sport = pkt[TCP].sport
                 dport = pkt[TCP].dport
@@ -40,7 +41,6 @@ def traffic_monitor_callback(pkt):
             if proto == 17:
                 sport = pkt[UDP].sport
                 dport = pkt[UDP].dport
-                udp_lenght = pkt[UDP].len
 
         traffic.update({tuple(sorted(map(atol, (pkt.src, pkt.dst)))): pkt.len})
 
