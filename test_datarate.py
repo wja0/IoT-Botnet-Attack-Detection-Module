@@ -34,5 +34,5 @@ for(h1,h2), total in traffic.most_common():
     h2 = "%s (%s)" % (hosts[h2], h2) if hosts[h2] is not None else h2
     print("%s/s: %s - %s" % (size_check(float(total)/sample_interval), h1, h2))
     print("Try num: %s" %(total))
-    print("자영바보")
-    
+    print("우아한 자영")
+
