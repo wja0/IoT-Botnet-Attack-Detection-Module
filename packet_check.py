@@ -14,7 +14,7 @@ src_traffic = Counter()
 hosts={}
 dst_traffic = Counter()
 #data = {'src_ip': ['init'], 'dst_ip' : ['init'], 'proto' : ['init'], 'src_mac' : ['init'], 'dst_mac' : ['init'], 'sport' : ['init'], 'dport':['init'], 'flag':['init'], 'ack':['init'], 'n_in_src':[0], 'n_in_dst':[0], 'rate':[0]}
-df = pd.DataFrame(columns=['saddr', 'daddr', 'proto', 'src_mac', 'dst_mac', 'sport', 'dport', 'flag', 'n_in_src', 'n_in_dst', 'rate', 'length', 'seq','attack','category','subcategory'])
+df = pd.DataFrame(columns=['saddr', 'daddr', 'proto', 'src_mac', 'dst_mac', 'sport', 'dport', 'flag', 'n_in_src', 'n_in_dst', 'srate', 'length', 'seq','attack','category','subcategory'])
 
 def size_check(num):
     try:
@@ -46,23 +46,31 @@ def traffic_monitor_callback(pkt):
                 message_type = pkt[ICMP].type
                 code = pkt[ICMP].code
                 #proto = str(proto)
-                proto = 'ICMP'
+                proto = 'icmp'
             
             if proto == 6:
                 sport = str(pkt[TCP].sport)
                 dport = str(pkt[TCP].dport)
                 #proto = str(proto)
-                proto = 'TCP'
+                proto = 'tcp'
                 seq = pkt[TCP].seq
                 ack = pkt[TCP].ack
                 flag = pkt[TCP].flags
+                if flag == 4:
+                    flag = 1 # RST
+                elif flag == 16:
+                    flag = 3 #ACK
+                elif flag == 1:
+                    flag = 2 #FIN
+                else:
+                    flag = 4
             
             if proto == 17:
                 sport = str(pkt[UDP].sport)
                 dport = str(pkt[UDP].dport)
                 seq = pkt[UDP].seq
                 #proto = str(proto)
-                proto = 'UDP'
+                proto = 'udp'
         
         src_traffic.update({tuple(map(str,src_ip))})
         dst_traffic.update({tuple(dst_ip)})
@@ -84,7 +92,7 @@ def add_n_in():
             if ''.join(dst_h) == h2:
                 temp_d = num_s
                 break
-        data = pd.DataFrame({'saddr': [h1], 'daddr' : [h2], 'proto' : [proto], 'src_mac' : [src_mac], 'dst_mac' : [dst_mac], 'sport' : [sport], 'dport':[dport], 'flag':[flag], 'n_in_src':[temp_s], 'n_in_dst':[temp_d], 'length' : [total], 'rate':[float(total)/sample_interval], 'seq' : [seq], 'attack' : [attack], 'category' : [category], 'subcategory' : [subcategory]})
+        data = pd.DataFrame({'saddr': [h1], 'daddr' : [h2], 'proto' : [proto], 'src_mac' : [src_mac], 'dst_mac' : [dst_mac], 'sport' : [sport], 'dport':[dport], 'flag':[flag], 'n_in_src':[temp_s], 'n_in_dst':[temp_d], 'length' : [total], 'srate':[float(total)/sample_interval], 'seq' : [seq], 'attack' : [attack], 'category' : [category], 'subcategory' : [subcategory]})
         df = pd.concat([df,data], ignore_index=True)
 
 def load_csv(PATH):
@@ -100,9 +108,9 @@ def make_data(original_df):
     df['mean']=0
     df['state_num'] = 0 # add in latter
     df['stddev'] = 0
-    df['drate'] = 0
-    df['srate'] = 0 # add in later
-    df = df.drop(['flag', 'length', 'rate', 'src_mac', 'dst_mac'])
+    df['drate'] = df['srate']
+    #df['srate'] = 0 # add in later
+    df = df.drop(['flag', 'length', 'src_mac', 'dst_mac'])
     original_df = pd.concat([orginal_df, df])
 
 if __name__ == "__main__":

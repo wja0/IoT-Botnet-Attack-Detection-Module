@@ -5,10 +5,10 @@ import csv
 
 
 protocols={1:'icmp', 6:'tcp', 17:'udp'}
-test_PATH = r'./testData.csv'
-train_PATH = r'./trainData.csv'
-new_train_PATH = r'./newTrainData.csv'
-new_test_PATH = r'./newTestData.csv'
+test_PATH = r'../dataset/testData.csv'
+train_PATH = r'../dataset/trainData.csv'
+new_train_PATH = r'../dataset/newTrainData.csv'
+new_test_PATH = r'../dataset/newTestData.csv'
 traffic = Counter()
 src_traffic = Counter()
 dst_traffic = Counter()
@@ -43,22 +43,38 @@ def traffic_monitor_callback(pkt):
                 message_type = pkt[ICMP].type
                 code = pkt[ICMP].code
                 #proto = str(proto)
-                proto = 'ICMP'
+                proto = 'icmp'
+                flag = 5
             
             if proto == 6:
                 sport = str(pkt[TCP].sport)
                 dport = str(pkt[TCP].dport)
                 #proto = str(proto)
-                proto = 'TCP'
+                proto = 'tcp'
                 seq = pkt[TCP].seq
                 ack = pkt[TCP].ack
                 flag = pkt[TCP].flags
+                if flag == 4:
+                    flag = 1
+                elif flag == 2:
+                    flag = 2
+                elif flag == 16:
+                    flag = 3
             
             if proto == 17:
-                sport = str(pkt[UDP].sport)
-                dport = str(pkt[UDP].dport)
+                try:
+                    sport = str(pkt[UDP].sport)
+                except:
+                    sport = str(0)
+
+                try:
+                    dport = str(pkt[UDP].dport)
+                except:
+                    sport = str(0)
                 #proto = str(proto)
-                proto = 'UDP'
+                flag = 4
+                proto = 'udp'
+
         
         src_traffic.update({tuple(map(str,src_ip))})
         dst_traffic.update({tuple(dst_ip)})
@@ -79,7 +95,7 @@ def add_n_in(df, scan_time):
             if ''.join(dst_h) == h2:
                 temp_d = num_s
                 break
-        data = pd.DataFrame({'saddr': [h1], 'daddr' : [h2], 'proto' : [proto], 'src_mac' : [src_mac], 'dst_mac' : [dst_mac], 'sport' : [sport], 'dport':[dport], 'flag':[flag], 'N_IN_Conn_P_SrcIP':[temp_s], 'N_IN_Conn_P_DstIP':[temp_d], 'length' : [total], 'rate':[float(total)/scan_time], 'seq' : [seq], 'attack' : [attack], 'category' : [category], 'subcategory' : [subcategory]})
+        data = pd.DataFrame({'saddr': [h1], 'daddr' : [h2], 'proto' : [proto], 'src_mac' : [src_mac], 'dst_mac' : [dst_mac], 'sport' : [sport], 'dport':[dport], 'flag':[flag], 'N_IN_Conn_P_SrcIP':[temp_s], 'N_IN_Conn_P_DstIP':[temp_d], 'length' : [total], 'srate':[float(total)/scan_time], 'seq' : [seq], 'attack' : [attack], 'category' : [category], 'subcategory' : [subcategory]})
         df = pd.concat([df,data], ignore_index=True)
     return df
 
@@ -93,11 +109,11 @@ def make_data(original_df, df):
     df['min'] = 0
     df['max']=0
     df['mean']=0
-    df['state_num'] = 0 # add in latter
+    df['state_num'] = df['flag'] # add in latter
     df['stddev'] = 0
-    df['drate'] = 0
-    df['srate'] = 0 # add in later
-    df = df.drop(['flag', 'length', 'rate', 'src_mac', 'dst_mac'],axis=1)
+    df['drate'] = df['srate']
+    #df['srate'] = 0 # add in later
+    df = df.drop(['flag', 'length',  'src_mac', 'dst_mac'],axis=1)
     original_df = pd.concat([original_df, df])
     return original_df
 
