@@ -35,7 +35,7 @@ def traffic_monitor_callback(pkt):
         subcategory = 'Normal' #delete in later
         sport = str(0)
         dport = str(0)
-        flag = str(0)
+        flag = 0
         seq = str(0)
 
         if proto in protocols:
@@ -109,7 +109,7 @@ def make_data(original_df, df):
     df['min'] = 0
     df['max']=0
     df['mean']=0
-    df['state_num'] = df['flag'] # add in latter
+    df['state_numer'] = df['flag'] # add in latter
     df['stddev'] = 0
     df['drate'] = df['srate']
     #df['srate'] = 0 # add in later
