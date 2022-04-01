@@ -109,7 +109,7 @@ def make_data(original_df, df):
     df['min'] = 0
     df['max']=0
     df['mean']=0
-    df['state_numer'] = df['flag'] # add in latter
+    df['state_number'] = df['flag'] # add in latter
     df['stddev'] = 0
     df['drate'] = df['srate']
     #df['srate'] = 0 # add in later
