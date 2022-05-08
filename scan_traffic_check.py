@@ -48,14 +48,11 @@ def traffic_monitor_callback(pkt):
         sport = str(0)
         dport = str(0)
         flag = 0
+        flags = 0
 
-        #if ("192.168.0." not in str(src_ip)) and ("192.168.0." not in str(dst_ip)):
-        #    return
-        #if ("192.168.0." not in str(src_ip)) and ("8.8.8.8" not in str(src_ip)) and ("8.8.4.4" not in str(src_ip)):
-        #    return 
-        
-        #if ("192.168.0." not in str(dst_ip)) and ("8.8.8.8" not in str(dst_ip)) and ("8.8.4.4" not in str(dst_ip)):
-        #    return;
+        if ("210.117.181.96" not in str(src_ip)) or ("210.117.181.86" not in str(dst_ip)):
+            if ("210.117.181.96" not in str(dst_ip)) or ("210.117.181.86" not in str(src_ip)):
+                return
         
         try:
             a = pkt[DNS]
@@ -94,8 +91,21 @@ def traffic_monitor_callback(pkt):
         src_traffic.update({tuple(src_ip)})
         dst_traffic.update({tuple(dst_ip)})
         check_ip(src_ip, dst_ip, dport, time)
-        traffic.update({tuple(map(str, (src_ip, dst_ip, proto, src_mac, dst_mac, sport, dport, flag, dns, attack))): length})
-        print(src_ip," ", dst_ip, " ",proto, " ",src_mac, " ",dst_mac, " ",sport, " ",dport, " ",flag, " ",dns," ", attack)
+        if 'U' in str(flag):
+            flags += 32
+        if 'A' in str(flag):
+            flags += 16
+        if 'P' in str(flag):
+            flags += 8
+        if 'R' in str(flag):
+            flags += 4
+        if 'S' in str(flag):
+            flags += 2
+        if 'F' in str(flag):
+            flags += 1
+        
+        traffic.update({tuple(map(str, (src_ip, dst_ip, proto, src_mac, dst_mac, sport, dport, flags, dns, attack))): length})
+        print(src_ip," ", dst_ip, " ",proto, " ",src_mac, " ",dst_mac, " ",sport, " ",dport, " ",flags, " ",dns," ", attack)
     #else:
     #    print(pkt)
 
@@ -144,7 +154,7 @@ def init_traffic():
 def do_sniff(scan_time):
     hosts={}
     df = pd.DataFrame(columns=['saddr', 'daddr', 'proto', 'src_mac', 'dst_mac', 'sport', 'dport', 'flag', 'N_IN_Conn_P_SrcIP', 'N_IN_Conn_P_DstIP', 'length', 'time', 'datarate','dns', 'category'])
-    sniff(iface="wlan0",prn=traffic_monitor_callback, timeout = scan_time, store=False)
+    sniff(iface="br0",prn=traffic_monitor_callback, timeout = scan_time, store=False)
     df = add_n_in(df, scan_time)
     
     return df
@@ -174,7 +184,7 @@ if __name__ == "__main__":
     #train_df = load_csv(train_PATH)
     #test_df= load_csv(test_PATH)
     init_traffic()
-    sc_time_one = 100
+    sc_time_one = 600
 #    sniff(prn=traffic_monitor_callback,filter='ip',timeout=sc_time_one, store=False)
     train_df = do_sniff(sc_time_one)
     write_csv(train_df, './nomal_traffic_cate.csv')
