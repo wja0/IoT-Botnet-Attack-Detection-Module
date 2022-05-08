@@ -50,17 +50,10 @@ def traffic_monitor_callback(pkt):
         flag = 0
         flags = 0
 
-        #if ("210.117.181.96" not in str(src_ip)) or ("210.117.181.86" not in str(dst_ip)):
-            #if ("210.117.181.96" not in str(dst_ip)) or ("210.117.181.86" not in str(src_ip)):
-                #return
+
         if ("210.117.181.96" not in str(src_ip)):
             return
-        #if ("192.168.0." not in str(src_ip)) and ("8.8.8.8" not in str(src_ip)) and ("8.8.4.4" not in str(src_ip)):
-            #return 
-        
-        #if ("192.168.0." not in str(dst_ip)) and ("8.8.8.8" not in str(dst_ip)) and ("8.8.4.4" not in str(dst_ip)):
-        #    return;
-        
+
         try:
             a = pkt[DNS]
             dns = 1
