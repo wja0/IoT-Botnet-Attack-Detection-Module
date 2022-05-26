@@ -35,6 +35,8 @@ def check_connetion(c_socket):
 
 def send_to_server(c_socket, pd):
     bad_traffic = pd.to_string().encode()
+    length = len(bad_traffic);
+    c_socket.sendall(length.to_bytes(4, byteorder="little"));
     c_socket.sendall(bad_traffic)
     
     
