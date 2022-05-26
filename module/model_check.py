@@ -1,4 +1,9 @@
+def model_init():
+    scan_model = joblib.load('./')
+    atk_model = joblib.load('./')
 
+    return scan_model, atk_model
+    
 
 def check_attack(x_traffic, scan_model, atk_model, host_ip):
     y_scan_traffic = model_scan.predict_classes(x_traffic)
