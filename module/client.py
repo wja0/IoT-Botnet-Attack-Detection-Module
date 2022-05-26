@@ -33,7 +33,11 @@ def check_connetion(c_socket):
     
     return False #check error plz
 
-
+def send_to_server(c_socket, pd):
+    bad_traffic = pd.to_string().encode()
+    c_socket.sendall(bad_traffic)
+    
+    
 #for i in range(1,10):
 #    msg = 'hello';
 #    data = msg.encode();
