@@ -1,11 +1,9 @@
-
-
 from scapy.all import *
 from collections import Counter
 import pandas as pd
 import csv
 from dataclasses import dataclass
-
+from requests import get
 @dataclass
 class Time_cls:
     src_ip:str = '-1.-1.-1.-1'
@@ -32,10 +30,11 @@ def traffic_monitor_callback(pkt):
         dst_ip = pkt[IP].dst #daddr
         host_ip = get("https://api.ipify.org").text
         
-        if str(src_ip) != host_ip:
-            if str(dst_ip) != host_ip:
-                if str(src_ip) not in '192.168.0.':
-                    return 
+        #if str(src_ip) not in host_ip:
+            #return 
+        #    if str(dst_ip) not in host_ip:
+        #        if str(src_ip) not in '192.168.0.':
+        #            return 
         
         time = pkt[IP].time # time_atr
         length = pkt[IP].len #length

