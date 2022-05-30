@@ -1,0 +1,52 @@
+<bot 환경 구성>
+- pi / password
+
+ 
+
+- honeypot_wifi 연결
+
+ 
+
+- root password
+
+sudo passwd
+ 
+
+- 포트 open
+
+sudo apt-get install iptables
+
+sudo iptables -I INPUT -p tcp --dport 23 -j ACCEPT 
+
+sudo iptables -I INPUT -p tcp --sport 23 -j ACCEPT
+
+sudo iptables-save
+
+reboot
+ 
+
+- 텔넷 관련 설정
+
+apt install telnet
+
+apt install telnetd
+ 
+
+-  xinetd
+
+apt install xinetd
+
+nano /etc/xinetd.d/telnet
+=>
+service telnet
+{
+    disable = no
+    flags = REUSE
+    socket_type = stream
+    wait = no
+    user = root
+    server = /usr/sbin/in.telnetd
+    log_on_failure += USRERID
+}
+
+nano /etc/services => 23 확인
