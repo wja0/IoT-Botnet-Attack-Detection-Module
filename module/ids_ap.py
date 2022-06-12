@@ -24,17 +24,9 @@ dst_traffic = Counter()
 def traffic_monitor_callback(pkt):
     if IP in pkt:
         proto = pkt[IP].proto #protocol
-        
-        
         src_ip = pkt[IP].src #saddr
         dst_ip = pkt[IP].dst #daddr
         host_ip = get("https://api.ipify.org").text
-        
-        #if str(src_ip) not in host_ip:
-            #return 
-        #    if str(dst_ip) not in host_ip:
-        #        if str(src_ip) not in '192.168.0.':
-        #            return 
         
         time = pkt[IP].time # time_atr
         length = pkt[IP].len #length
