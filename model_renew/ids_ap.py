@@ -74,16 +74,22 @@ def traffic_monitor_callback(pkt):
         proto = pkt[IP].proto #protocol
         src_ip = pkt[IP].src #saddr
         dst_ip = pkt[IP].dst #daddr
-        host_ip = '210.117.181.96'
+        host_ip = '192.168.2.5'
         #host_ip = get("https://api.ipify.org").text
         
         if proto not in protocols:
             return
         
+#        if str(src_ip) not in host_ip or str(dst_ip) not in '210.117.181.86':
+#            if str(src_ip) not in '210.117.181.86' or str(dst_ip) not in host_ip:
+#                return
+
         #if str(src_ip) not in host_ip:
         #    if str(dst_ip) not in host_ip:
-        #        return 
-        
+        #        return
+
+
+            
         time = pkt[IP].time # time_atr
         length = pkt[IP].len #length
         src_mac = pkt[0][0].src #smac

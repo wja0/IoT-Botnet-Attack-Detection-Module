@@ -4,9 +4,9 @@ import pandas as pd
 def connection_server():
     #domain = 'cncloader.shop'
     #ip = socket.gethostbyname_ex(domain)
-    HOST = '210.117.181.83'
+    HOST = '210.117.181.86'
     #HOST = '210.117.181.86'
-    PORT = 20224
+    PORT = 20226
     #PORT = 20226
     
     c_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

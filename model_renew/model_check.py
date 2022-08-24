@@ -8,10 +8,10 @@ import joblib
 from collections import Counter
 import xgboost as xgb
 #import tensorflow as tf
-
+str_attack = ['Normal', 'Scan IN', 'Scan OUT']
 
 def model_init():
-    final_model = joblib.load('./RAN_renew.h5')
+    final_model = joblib.load('./RAN_in_out_2.h5')
     
     return final_model
     
@@ -24,10 +24,11 @@ def check_attack(x_traffic, final_model, host_ip):
     result['attack'] = y_traffic
     
     for i in y_traffic:
-        if i == 1:
-           cnt = cnt + 1 
+        if i == 1 or i == 2:
+           cnt = cnt + 1
+        
    
-    attack = False
+    attack = True
     if cnt > 50:
         attack = True
         
@@ -36,8 +37,9 @@ def check_attack(x_traffic, final_model, host_ip):
     #print('Attack 2: '+str(len(result.loc[result['attack']==2])))
     #print('Attack 3: '+str(len(result.loc[result['attack']==3])))
     
-    for i in range(4):
-        print('Attack %d: %d' % (i,len(result.loc[result['attack']== i ])))
+    print("[*]Finish Botnet Attack Detection")
+    for i in range(3):
+        print('Attack %d (%s): %d' % (i,str_attack[i],len(result.loc[result['attack']== i ])))
     
     return attack, result
             
