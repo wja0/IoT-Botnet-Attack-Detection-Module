@@ -1,0 +1,10 @@
+Mirai: Compiled based on Mirai source code released in 2016
+Mozi, tsunami: smaple malware
+
+- attack
+<Attack type>
+
+0: normal traffic
+1: AP scans other devices (mirai + mozi)
+2: AP AP is scanned by other devices (mirai)
+3: Commuticate with CNC, Loader
